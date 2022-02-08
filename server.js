@@ -1,5 +1,11 @@
 const express = require('express');
 const app = express();
+// 设置模版引擎 html
+app.set('view engine', 'html');
+// 指定模版的存放根目录
+app.set('views', path.resolve('views'));
+// 指定对于html类型的模版使用ejs方法来进行渲染
+app.engine('html', require('ejs').__express);
 const port = 8080;
 const index = require('./routes/index');
 const user = require('./routes/user');
