@@ -1,5 +1,6 @@
 // 用户路由
 let express = require('express');
+let { User } = require('../model');
 let router = express.Router();
 // 用户注册 /user/signup
 /**
@@ -15,9 +16,15 @@ router.get('/signup', function (req, res) {
     });
 })
 router.post('/signup', function (req, res) {
+    console.log("🚀 ~ file: user.js ~ line 19 ~ req", req)
     let user = req.body; // 请求体对象(username,passeord,email)
-    res.render('user/signup', {
-        title: "用户注册"
+    console.log("🚀 ~ file: user.js ~ line 20 ~ user", user)
+    User.create(user, function(err, doc) {
+        if (err) {
+            res.redirect('back');
+        } else {
+            res.redirect('/user/signin');
+        }
     });
 })
 // 登录 /user/signin 
