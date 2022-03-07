@@ -28,7 +28,7 @@ function AppRouter () {
                 <Route path="/article" element={lazyLoad('article/components/articleList')} />
                 <Route path="/article/:slug" element={lazyLoad('article/components/articleInfo')} />
             </Route>
-            <Route path="/error" element={lazyLoad('home')}></Route>
+            <Route path="/error" element={lazyLoad('error')}></Route>
             <Route path="*" element={<Navigate to="/error" />} />
         </Routes>
     </Router>
