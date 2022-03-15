@@ -62,7 +62,7 @@ const useTypeScript = fs.existsSync(paths.appTsConfig);
 const useTailwind = fs.existsSync(
   path.join(paths.appPath, 'tailwind.config.js')
 );
-
+const ModifyConsole = require('../plugin/modify-console');
 // Get the path to the uncompiled service worker (if it exists).
 const swSrc = paths.swSrc;
 
@@ -562,6 +562,7 @@ module.exports = function (webpackEnv) {
       ].filter(Boolean),
     },
     plugins: [
+      new ModifyConsole(),
       // Generates an `index.html` file with the <script> injected.
       new HtmlWebpackPlugin(
         Object.assign(
