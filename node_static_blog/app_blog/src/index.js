@@ -9,8 +9,8 @@ import {
     scheduleCallback, // 调度回调，计划执行回调
     shouldYield, // 应该放弃执行权/中断
  } from './reactStudy/scheduler';
-let result = 0;
-let i = 0;
+ let result = 0, result2 = 0;
+ let i = 0, i2 = 0;
 /**
  * 要想能过方便的让任务能过 暂停和恢复，需要数据结构支持
  * @returns 
@@ -29,5 +29,18 @@ function calculate() {
         return null;
     }
 }
+function calculate2() {
+    for (; i2 < 2000000 && (!shouldYield()); i2++) {
+        result2 += 1;
+    }
+    // 当推出本任务的时候，如果任务没有完成，返回任务函数本身，如果任务完成了就返回null
+    if (i2 < 2000000) {
+        return calculate;
+    } else {
+        console.log(result2);
+        return null;
+    }
+}
 
 scheduleCallback(calculate);
+scheduleCallback(calculate2);
