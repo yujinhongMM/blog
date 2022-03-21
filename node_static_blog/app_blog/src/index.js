@@ -13,6 +13,7 @@ import {
     NormalPriority, 
     LowPriority, 
     IdlePriority,
+    cancelCallback
  } from './reactStudy/scheduler';
  let result = 0, result2 = 0, result3 = 0;
  let i = 0, i2 = 0, i3= 0;
@@ -62,5 +63,6 @@ function calculate3(didTimeout) {
 }
 // 希望能过插队，后来的任务先执行
 scheduleCallback(ImmediatePriority, calculate); // -1
-scheduleCallback(LowPriority, calculate2, { delay: 10000}); // 10000ms
+const task = scheduleCallback(LowPriority, calculate2, { delay: 10000}); // 10000ms
 scheduleCallback(UserBlockingPriority, calculate3); // 250ms
+cancelCallback(task);
