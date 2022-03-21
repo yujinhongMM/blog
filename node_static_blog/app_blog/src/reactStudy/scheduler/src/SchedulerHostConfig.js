@@ -7,7 +7,7 @@ messageChannel.port1.onmessage = performWorkUntilDeadline;
 let deadline = 0;
 // 每一帧我会申请5毫秒
 let yieldInterval = 5;
-function getCurrentTime() {
+export function getCurrentTime() {
     return performance.now();
 }
 /**
