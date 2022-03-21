@@ -22,6 +22,7 @@ let taskQueue = [];
 let currentTask;
 /**
  * 调度一个回调任务
+ * @param {*} priorityLevel 优先级
  * @param {*} callback 
  */
 function scheduleCallback (priorityLevel, callback) {
@@ -67,8 +68,8 @@ function scheduleCallback (priorityLevel, callback) {
 /**
  * 依次执行任务队列中的任务
  */
-function flushWork() {
-    return workLoop();
+function flushWork(currentTime) {
+    return workLoop(currentTime);
 }
 /**
  * 在这里有两个打断或者停止执行
@@ -76,29 +77,45 @@ function flushWork() {
  * 另一个是在执行currentTask的时候，如果时间片到期了，也会退出执行
  * @returns 
  */
-function workLoop() {
-    // 取出任务队列中的第一个任务
-    currentTask = taskQueue[0];
+function workLoop(currentTime) {
+    // 取出优先队列中的优先级最高的堆顶元素，也就是过期时间最早的元素
+    currentTask = peek(taskQueue); // 等同于currentTask = taskQueue[0];
     while(currentTask) {
         // 如果说时间片到期了，就退出循环
-        if (shouldYield()) {
+        // 如果说过期时间大于当前时间，并且时间片到期就推出执行 => 如果说已经过期了，及时时间片到期了，也需要继续执行 => 如果一个任务过期了，则不再考虑所谓时间配额问题了，立刻马上权利执行结束
+        if (currentTask.expirationTime > currentTime && shouldYield()) {
             break;
         }
-        // 继续执行回调
-        const continuationCallback = currentTask();
-        // 如果为function说明任务没结束，当前任务还为之前的。
-        if (typeof continuationCallback === 'function') {
-            currentTask = continuationCallback;
+        // 取出当前任务的回调函数calculate
+        const callback = currentTask.callback;
+        // 如果它是一个函数的话
+        if (typeof callback === 'function') {
+            // 先清空
+            currentTask.callback = null;
+            // 判断此任务是否过期
+            const didUserCallbackTimeout = currentTask.expirationTime <= currentTime;
+            const continuationCallback = callback(didUserCallbackTimeout);
+            if (typeof continuationCallback === 'function') {
+                currentTask.callback = continuationCallback;
+            } else {
+                pop(taskQueue);
+            }
         } else {
-            // 移除最先进队的回调函数
-            taskQueue.shift();
+            // 如果任务的callback属性不是函数，则将此任务出队，这个在后面的取消任务的会用到
+            pop(taskQueue);
         }
-        currentTask = taskQueue[0];
+        // 继续取出最小堆堆顶的任务
+        currentTask = peek(taskQueue);
     }
     return currentTask;
 }
 
 export {
     scheduleCallback,
-    shouldYield
+    shouldYield,
+    ImmediatePriority, 
+    UserBlockingPriority, 
+    NormalPriority, 
+    LowPriority, 
+    IdlePriority
 }
