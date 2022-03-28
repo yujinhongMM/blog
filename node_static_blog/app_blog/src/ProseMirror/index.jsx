@@ -11,12 +11,11 @@ const { schema, model } = require('./schema');
 const getState = domString => {
     let domParser = new DOMParser();
     let dom = domParser.parseFromString(domString, 'text/html')
-    console.log('%c [ dom ]-12', 'font-size:13px; background:pink; color:#bf2c9f;', dom)
     let state = EditorState.create({
         doc: model.DOMParser.fromSchema(schema).parse(dom)
     })
     
-    let view = new EditorView(document.body, {state})
+    let view = new EditorView(document.querySelector("#content"), {state})
     
     const getData = {
         // html: domNode.innerHTML,
@@ -29,13 +28,15 @@ const getState = domString => {
 }
 
 
-getState('<h1>是一个超级h1</h1><h2>是一个超级h2</h2><h5>是一个超级h5</h5><h6>是一个超级h5</h6>')
+
 
 
 
 function App() {
-    useEffect(() => { }, [])
-    return <div id="content">111</div>;
+    useEffect(() => { 
+        getState('<h2><h1></h1></h2><h1>是一个超级h1</h1><h2 style="text-align: right;">是一个超级h2</h2><h5 style="text-align: left;">是一个超级h5</h5><h6>是一个超级h5</h6>')
+    }, [])
+    return <div id="content"></div>;
 }
 
 export default App;
